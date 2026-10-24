@@ -208,12 +208,12 @@ public class Interfaz extends JFrame {
                 mostrarError("El numero de edicion tiene que ser mayor que cero.");
                 return;
             }
-            nuevo = new Revista(codigo, titulo, anio, imagen, edicion);
+            nuevo = new Revistas(codigo, titulo, anio, imagen, edicion);
         } else {
             nuevo = new Tesis(codigo, titulo, anio, imagen, dato);
         }
 
-        biblioteca.agregarMaterial(nuevo);
+        biblioteca.registrarMaterial(nuevo);
         mostrarAviso("El material " + codigo + " fue registrado correctamente.");
 
         campoCodigoRegistro.setText("");
@@ -240,13 +240,144 @@ public class Interfaz extends JFrame {
         } else {
             String datos = "Codigo: " + encontrado.getCodigo()
                 + "\nTitulo: " + encontrado.getTitulo()
-                + "\nTipo: " + encontrado.getTipo()
-                + "\nAnio: " + encontrado.getAnio()
+                + "\nAnio: " + encontrado.getAnioPublicacion()
                 + "\nImagen: " + encontrado.getImagen()
                 + "\nDisponible: " + textoDisponible(encontrado);
             mostrarAviso("Material encontrado:\n" + datos);
         }
     }
 
+     private void prestarMaterial() {
+        String codigo = (String) cajaDisponibles.getSelectedItem();
+
+        if (codigo == null) {
+            mostrarError("No hay materiales disponibles para prestar.");
+            return;
+        }
+
+        MaterialBibliografico material = biblioteca.buscarPorCodigo(codigo);
+
+        if (material == null) {
+            mostrarError("El material " + codigo + " no existe.");
+            return;
+        }
+
+        if (!material.isDisponible()) {
+            mostrarError("El material " + codigo + " no esta disponible.");
+            actualizarTodo();
+            return;
+        }
+
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "Desea prestar el material " + codigo + "?",
+                "Confirmar prestamo",
+                JOptionPane.YES_NO_OPTION);
+
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        Prestamo prestamo = biblioteca.prestar(codigo);
+
+        if (prestamo == null) {
+            mostrarError("No se pudo registrar el prestamo.");
+        } else {
+            mostrarAviso("Prestamo registrado.\nFecha prevista de devolucion: "
+                    + formatear(prestamo.getFechaPrevista()));
+        }
+
+        actualizarTodo();
+    }
+
+    private void devolverMaterial() {
+        String codigo = (String) cajaPrestados.getSelectedItem();
+
+        if (codigo == null) {
+            mostrarError("No hay materiales prestados para devolver.");
+            return;
+        }
+
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "Desea registrar la devolucion del material " + codigo + "?",
+                "Confirmar devolucion",
+                JOptionPane.YES_NO_OPTION);
+
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        Prestamo cerrado = biblioteca.devolver(codigo);
+
+        if (cerrado == null) {
+            mostrarError("El material " + codigo + " no tiene un prestamo activo.");
+        } else {
+            mostrarAviso("Devolucion registrada.\nDias de retraso: " + cerrado.getDiasRetraso()
+                    + "\nMulta: " + String.format("%.2f", cerrado.getMulta()) + " euros");
+        }
+
+        actualizarTodo();
+    }
+
+    
+    private void actualizarTodo() {
+        refrescarTabla();
+        refrescarListas();
+    }
+
+    private void refrescarTabla() {
+        modeloTabla.setRowCount(0);
+
+        for (int i = 0; i < biblioteca.cantidadMateriales(); i++) {
+            MaterialBibliografico material = biblioteca.obtenerMaterial(i);
+            String[] fila = {
+                material.getCodigo(),
+                material.getTitulo(),
+                material.getTipo(),
+                String.valueOf(material.getAnio()),
+                material.getImagen(),
+                textoDisponible(material)
+            };
+            modeloTabla.addRow(fila);
+        }
+    }
+
+    private void refrescarListas() {
+        cajaDisponibles.removeAllItems();
+        cajaPrestados.removeAllItems();
+
+        for (int i = 0; i < biblioteca.cantidadMateriales(); i++) {
+            MaterialBibliografico material = biblioteca.obtenerMaterial(i);
+            if (material.estaDisponible()) {
+                cajaDisponibles.addItem(material.getCodigo());
+            } else {
+                cajaPrestados.addItem(material.getCodigo());
+            }
+        }
+    }
+
+    private String textoDisponible(MaterialBibliografico material) {
+        if (material.estaDisponible()) {
+            return "Si";
+        }
+        return "No";
+    }
+
+    private String formatear(Calendar fecha) {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        return formato.format(fecha.getTime());
+    }
+
+    private int anioActual() {
+        Calendar hoy = Calendar.getInstance();
+        return hoy.get(Calendar.YEAR);
+    }
+
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void mostrarAviso(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Informacion", JOptionPane.INFORMATION_MESSAGE);
+    }
     
 }
