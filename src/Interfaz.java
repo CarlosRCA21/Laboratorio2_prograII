@@ -213,7 +213,10 @@ public class Interfaz extends JFrame {
             nuevo = new Tesis(codigo, titulo, anio, imagen, dato);
         }
 
-        biblioteca.registrarMaterial(nuevo);
+        if (!biblioteca.registrarMaterial(nuevo)) {
+            mostrarError("No se pudo registrar el material. Revise el anio y el codigo.");
+            return;
+        }
         mostrarAviso("El material " + codigo + " fue registrado correctamente.");
 
         campoCodigoRegistro.setText("");
@@ -277,7 +280,7 @@ public class Interfaz extends JFrame {
             return;
         }
 
-        Prestamo prestamo = biblioteca.prestar(codigo);
+        Prestamo prestamo = biblioteca.prestarMaterial(codigo);
 
         if (prestamo == null) {
             mostrarError("No se pudo registrar el prestamo.");
@@ -306,7 +309,7 @@ public class Interfaz extends JFrame {
             return;
         }
 
-        Prestamo cerrado = biblioteca.devolver(codigo);
+        Prestamo cerrado = biblioteca.devolverMaterial(codigo);
 
         if (cerrado == null) {
             mostrarError("El material " + codigo + " no tiene un prestamo activo.");
@@ -327,13 +330,13 @@ public class Interfaz extends JFrame {
     private void refrescarTabla() {
         modeloTabla.setRowCount(0);
 
-        for (int i = 0; i < biblioteca.cantidadMateriales(); i++) {
-            MaterialBibliografico material = biblioteca.obtenerMaterial(i);
+        for (int i = 0; i < biblioteca.getMateriales().size(); i++) {
+            MaterialBibliografico material = biblioteca.getMateriales().get(i);
             String[] fila = {
                 material.getCodigo(),
                 material.getTitulo(),
-                material.getTipo(),
-                String.valueOf(material.getAnio()),
+                tipoDeMaterial(material),
+                String.valueOf(material.getAnioPublicacion()),
                 material.getImagen(),
                 textoDisponible(material)
             };
@@ -345,9 +348,9 @@ public class Interfaz extends JFrame {
         cajaDisponibles.removeAllItems();
         cajaPrestados.removeAllItems();
 
-        for (int i = 0; i < biblioteca.cantidadMateriales(); i++) {
-            MaterialBibliografico material = biblioteca.obtenerMaterial(i);
-            if (material.estaDisponible()) {
+        for (int i = 0; i < biblioteca.getMateriales().size(); i++) {
+            MaterialBibliografico material = biblioteca.getMateriales().get(i);
+            if (material.isDisponible()) {
                 cajaDisponibles.addItem(material.getCodigo());
             } else {
                 cajaPrestados.addItem(material.getCodigo());
@@ -355,8 +358,17 @@ public class Interfaz extends JFrame {
         }
     }
 
+    private String tipoDeMaterial(MaterialBibliografico material) {
+        if (material instanceof Libro) {
+            return "Libro";
+        } else if (material instanceof Revistas) {
+            return "Revista";
+        }
+        return "Tesis";
+    }
+
     private String textoDisponible(MaterialBibliografico material) {
-        if (material.estaDisponible()) {
+        if (material.isDisponible()) {
             return "Si";
         }
         return "No";
