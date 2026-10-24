@@ -63,4 +63,89 @@ public class Interfaz extends JFrame {
         actualizarTodo();
     }
     
+     private JPanel crearPanelRegistro() {
+        JPanel panel = new JPanel(new GridLayout(8, 2, 5, 5));
+
+        JButton botonRegistrar = new JButton("Registrar material");
+        botonRegistrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                registrarMaterial();
+            }
+        });
+
+        cajaTipo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cambiarEtiquetaDato();
+            }
+        });
+
+        panel.add(new JLabel("Tipo de material:"));
+        panel.add(cajaTipo);
+        panel.add(new JLabel("Codigo:"));
+        panel.add(campoCodigoRegistro);
+        panel.add(new JLabel("Titulo:"));
+        panel.add(campoTitulo);
+        panel.add(new JLabel("Anio de publicacion:"));
+        panel.add(campoAnio);
+        panel.add(etiquetaDato);
+        panel.add(campoDato);
+        panel.add(new JLabel("Imagen (nombre o ruta):"));
+        panel.add(campoImagen);
+        panel.add(new JLabel(""));
+        panel.add(botonRegistrar);
+        return panel;
+    }
+
+    private JPanel crearPanelBusqueda() {
+        JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
+
+        JButton botonBuscar = new JButton("Buscar");
+        botonBuscar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                buscarMaterial();
+            }
+        });
+
+        panel.add(new JLabel("Codigo del material:"));
+        panel.add(campoBusqueda);
+        panel.add(new JLabel(""));
+        panel.add(botonBuscar);
+        return panel;
+    }
+
+    private JPanel crearPanelPrestamos() {
+        JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
+
+        JButton botonPrestar = new JButton("Prestar material");
+        botonPrestar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                prestarMaterial();
+            }
+        });
+
+        panel.add(new JLabel("Material disponible:"));
+        panel.add(cajaDisponibles);
+        panel.add(new JLabel(""));
+        panel.add(botonPrestar);
+        return panel;
+    }
+
+    private JPanel crearPanelDevoluciones() {
+        JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
+
+        JButton botonDevolver = new JButton("Devolver material");
+        botonDevolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                devolverMaterial();
+            }
+        });
+
+        panel.add(new JLabel("Material prestado:"));
+        panel.add(cajaPrestados);
+        panel.add(new JLabel(""));
+        panel.add(botonDevolver);
+        return panel;
+    }
+
+    
 }
