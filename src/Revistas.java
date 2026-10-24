@@ -15,4 +15,25 @@ public class Revistas extends MaterialBibliografico {
         this.numeroEdicion = numeroEdicion;
     }
     
+public int getNumeroEdicion() {
+        return numeroEdicion;
+    }
+
+    public void setNumeroEdicion(int numeroEdicion) {
+        this.numeroEdicion = numeroEdicion;
+    }
+
+    @Override
+    public int obtenerPlazoPrestamo() {
+        return 7;
+    }
+
+    @Override
+    public double calcularMulta(int diasRetraso) {
+        double multaTotal = 0.0;
+        if (diasRetraso > 0) {
+            multaTotal = diasRetraso * 0.75;
+        }
+        return multaTotal;
+    }
 }
