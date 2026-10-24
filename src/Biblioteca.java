@@ -3,9 +3,11 @@ import java.util.Calendar;
 
 public class Biblioteca {
     private ArrayList<MaterialBibliografico> materiales;
+    private ArrayList<Prestamo> prestamos;
 
     public Biblioteca() {
         materiales = new ArrayList<>();
+        prestamos = new ArrayList<>();
     }
 
     public boolean registrarMaterial(MaterialBibliografico material) {
@@ -48,4 +50,49 @@ public class Biblioteca {
         return new ArrayList<>(materiales);
     }
 
+    public ArrayList<Prestamo> getPrestamos() {
+        return new ArrayList<>(prestamos);
+    }
+
+    public Prestamo buscarPrestamoActivo(String codigo) {
+        if (codigo == null || codigo.trim().isEmpty()) {
+            return null;
+        }
+
+        for (int i=0; i < prestamos.size(); i++) {
+            Prestamo aux = prestamos.get(i);
+            if (!aux.isDevuelto() && aux.getMaterial().getCodigo().trim().equalsIgnoreCase(codigo.trim())) {
+                return aux;
+            }
+        }
+        return null;
+    }
+
+    public Prestamo prestarMaterial(String codigo) {
+        MaterialBibliografico material = buscarPorCodigo(codigo, 0);
+        if (material == null || !material.isDisponible()) {
+            return null;
+        }
+        if (buscarPrestamoActivo(codigo) != null || material.obtenerPlazoPrestamo() <= 0) {
+            return null;
+        }
+
+        Prestamo prestamo = new Prestamo(material);
+        prestamos.add(prestamo);
+        material.setDisponible(false);
+        return prestamo;
+    }
+
+    public Prestamo devolverMaterial(String codigo) {
+        Prestamo prestamo = buscarPrestamoActivo(codigo);
+        if (prestamo == null) {
+            return null;
+        }
+
+        if (prestamo.devolver()) {
+            prestamo.getMaterial().setDisponible(true);
+            return prestamo;
+        }
+        return null;
+    }
 }
