@@ -12,6 +12,29 @@ public class Tesis extends MaterialBibliografico {
 
     public Tesis(String codigo, String titulo, int anioPublicacion, String imagen, String autorAcademico) {
         super(codigo, titulo, anioPublicacion, imagen);
-        this.autorAcademico = autorAcademico;
+        this.autorAcademico=autorAcademico;
     }
-}    
+
+    public String getAutorAcademico() {
+        return autorAcademico;
+    }
+
+    public void setAutorAcademico(String autorAcademico) {
+        this.autorAcademico=autorAcademico;
+    }
+
+    @Override
+    public int obtenerPlazoPrestamo() {
+        return 3;
+    }
+
+    @Override
+    public double calcularMulta(int diasRetraso) {
+        double multaTotal=0.0;
+        if (diasRetraso>0) {
+            multaTotal=diasRetraso*3.00;
+        }
+        return multaTotal;
+    }
+}
+   
