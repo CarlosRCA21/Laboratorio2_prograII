@@ -26,7 +26,7 @@ public class MaterialBibliografico {
     }
 
     public void setCodigo(String codigo) {
-        this.codigo = codigo;
+        this.codigo=codigo;
     }
 
     public String getTitulo() {
@@ -34,7 +34,7 @@ public class MaterialBibliografico {
     }
 
     public void setTitulo(String titulo) {
-        this.titulo = titulo;
+        this.titulo=titulo;
     }
 
     public int getAnioPublicacion() {
